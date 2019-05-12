@@ -43,12 +43,13 @@ pipeline {
 
 	    stage ('Export/Import definitions Rabbit current') {
 	      	steps {
+	      		container('rabbitmqadmin') {
+		        	scripts {
+		        		sh 'rabbitmq.rabbitmq-deployment.svc.cluster.local export rabbitmq-blue-green-definitions.json'
 
-	        	scripts {
-	        		sh 'rabbitmq.rabbitmq-deployment.svc.cluster.local export rabbitmq-blue-green-definitions.json'
-
-	        		sh 'rabbitmq-blue.rabbitmq-deployment.svc.cluster.local import rabbitmq-blue-green-definitions.json'
-	        	}
+		        		sh 'rabbitmq-blue.rabbitmq-deployment.svc.cluster.local import rabbitmq-blue-green-definitions.json'
+		        	}
+		        }
 	      	}
 	    }
 
