@@ -1,0 +1,41 @@
+# Export Definitions (exchanges, queues, etc)
+
+rabbitmqadmin --host <HOST> export <file>
+#rabbitmqadmin --host rabbitmq-blue.rabbitmq-deployment.svc.cluster.local export rabbitmq-blue-green-definitions.json
+
+# Import Definitions
+
+rabbitmqadmin --host <HOST> import <file>
+#rabbitmqadmin --host rabbitmq-blue.rabbitmq-deployment.svc.cluster.local import rabbitmq-blue-green-definitions.json
+
+# Set Parameter to green look into blue
+
+rabbitmqctl set_parameter federation-upstream blue '{"uri":"amqp://rabbitmq-blue.rabbitmq-deployment.svc.cluster.local"}'
+
+# Create policy to look queues in blue rabbit 
+
+rabbitmqctl set_policy blue-green-migration --apply-to queues ".*" '{"federation-upstream":"blue"}'
+
+# Drain messages from blue to green rabbit
+
+rabbitmqctl set_parameter shovel drain-blue '{"src-protocol": "amqp091", "src-uri": "amqp://rabbitmq-blue.rabbitmq-deployment.svc.cluster.local", "src-queue": "teste-blue-green", "dest-protocol": "amqp091", "dest-uri": "amqp://rabbitmq-green.rabbitmq-deployment.svc.cluster.local", "dest-queue": "teste-blue-green"}'
+
+# Teste
+# Producer: Produzir uma mensagem
+./producer -uri "amqp://guest:guest@rabbitmq-green:5672//"  -exchange "teste-blue-green" -exchange-type "topic" -key "checklist-blue-green" -body 'Neste caso apos a reconexao, tudo volta ao normal'
+
+# Consumer: Olhar a fila e imprimir na tela
+./consumer -uri "amqp://guest:guest@rabbitmq-green:5672//"  -exchange "teste-blue-green" -exchange-type "topic" -key "checklist-blue-green" -queue "teste-blue-green" -consumer-tag "consumer-test"  -lifetime 0
+
+# Troubleshooting
+# Commands do help you
+
+# Look for parameter and policies
+rabbitmqctl list_parameters
+rabbitmqctl list_policies
+
+# Look for exchanges and queues
+rabbitmqctl list_exchanges
+rabbitmqctl list_queues
+
+

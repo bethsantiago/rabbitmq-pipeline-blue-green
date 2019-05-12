@@ -28,7 +28,7 @@ pipeline {
 	                - cat
 	                tty: true
 	                volumeMounts:
-	                - mountPath: /home/docker/volumes/rabbit-backup/
+	                - mountPath: /backup/
 	                  name: rabbitmq-backup
 	              volumes:
 	              - name: rabbitmq-backup
@@ -41,13 +41,13 @@ pipeline {
 
   	stages {
 
-	    stage ('Export/Import definitions Rabbit current') {
+	    stage ('Export/Import definitions RabbitMQ') {
 	      	steps {
 	      		container('rabbitmqadmin') {
 		        	scripts {
-		        		sh 'rabbitmq.rabbitmq-deployment.svc.cluster.local export rabbitmq-blue-green-definitions.json'
+		        		sh 'rabbitmqadmin --host rabbitmq-blue.rabbitmq-deployment.svc.cluster.local export /backup/rabbitmq-blue-green-definitions.json'
 
-		        		sh 'rabbitmq-blue.rabbitmq-deployment.svc.cluster.local import rabbitmq-blue-green-definitions.json'
+		        		sh 'rabbitmqadmin --host rabbitmq-green.rabbitmq-deployment.svc.cluster.local import /backup/rabbitmq-blue-green-definitions.json'
 		        	}
 		        }
 	      	}
