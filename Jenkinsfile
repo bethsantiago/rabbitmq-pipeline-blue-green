@@ -1,3 +1,11 @@
+/*
+RABBITMQ Pipieline for Deploy Blue / Green
+Objectivies: 
+Pré-requisits: 
+Autor:
+
+
+*/
 pipeline {
 	agent {
 	    kubernetes {
