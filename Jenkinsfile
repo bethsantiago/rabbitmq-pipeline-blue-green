@@ -1,8 +1,9 @@
 /*
 RABBITMQ Pipieline for Deploy Blue / Green
-Objectivies: 
-Pré-requisits: 
-Autor:
+Objetivos: Realizar deploy de nova versão do RabbitMQ e importar todas as filas e mensagens.
+Pré-requisits: Ter RabbitMQ instalado no ambiente Kubernetes
+Autor: Elizabeth Santiago / Ivan Santos
+
 
 
 */
