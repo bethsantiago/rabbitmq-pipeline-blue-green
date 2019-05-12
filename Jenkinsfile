@@ -61,22 +61,31 @@ pipeline {
 
 	    stage ('Set Federation') {
 	    	steps {
-
-	    		scripts {
-	    			sh '''
-	    				rabbitmqctl set_parameter federation-upstream blue '{"uri":"amqp://rabbitmq-blue.rabbitmq-deployment.svc.cluster.local"}'
-	    				'''
+	    		container('kubectl') {
+		    		scripts {
+		    			sh '''
+		    				rabbitmqctl \
+		    					set_parameter \
+		    					federation-upstream blue \
+		    					'{"uri":"amqp://${BLUE}"}'
+		    			
+		    			'''
+		    		}
 	    		}
 	    	}
 	    }
 
 	    stage ('Set Policy') {
 	    	steps {
-
-	    		scripts {
-	    			sh '''
-	    				rabbitmqctl set_policy blue-green-migration --apply-to queues ".*" '{"federation-upstream":"blue"}'
-	    				'''
+	    		container('kubectl') {
+		    		scripts {
+		    			sh '''
+		    				rabbitmqctl \
+		    					set_policy blue-green-migration \
+		    					--apply-to queues ".*" \
+		    					'{"federation-upstream":"blue"}'
+		    			'''
+		    		}
 	    		}
 	   		}
 	   	}
