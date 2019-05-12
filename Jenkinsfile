@@ -39,15 +39,21 @@ pipeline {
 	  	}
 	}
 
+	environment {
+        BLUE = 'rabbitmq-blue.rabbitmq-deployment.svc.cluster.local'
+        GREEN = 'rabbitmq-green.rabbitmq-deployment.svc.cluster.local'
+        BACKUP_DIR = '/backup'
+    }
+
   	stages {
 
 	    stage ('Export/Import definitions RabbitMQ') {
 	      	steps {
 	      		container('rabbitmqadmin') {
 		        	scripts {
-		        		sh 'rabbitmqadmin --host rabbitmq-blue.rabbitmq-deployment.svc.cluster.local export /backup/rabbitmq-blue-green-definitions.json'
+		        		sh 'rabbitmqadmin --host ${BLUE} export ${BACKUP_DIR}/rabbitmq-blue-definitions.json'
 
-		        		sh 'rabbitmqadmin --host rabbitmq-green.rabbitmq-deployment.svc.cluster.local import /backup/rabbitmq-blue-green-definitions.json'
+		        		sh 'rabbitmqadmin --host ${GREEN} import ${BACKUP_DIR}/rabbitmq-blue-definitions.json'
 		        	}
 		        }
 	      	}
